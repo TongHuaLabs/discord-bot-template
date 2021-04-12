@@ -1,0 +1,23 @@
+{
+  "name": "discord-bot-template",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "yarn tsc",
+    "watch": "yarn tsc -w",
+    "start": "node dist/index.js",
+    "dev": "yarn nodemon"
+  },
+  "dependencies": {
+    "@discordjs/opus": "^0.5.0",
+    "discord.js": "^12.5.3",
+    "dotenv": "^8.2.0",
+    "typescript": "^4.2.4"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.37",
+    "nodemon": "^2.0.7",
+    "ts-node": "^9.1.1"
+  }
+}
