@@ -1,6 +1,11 @@
-import { Message, PermissionResolvable } from 'discord.js';
+import {
+  Message,
+  PermissionResolvable,
+  CommandInteraction,
+  ApplicationCommandOption,
+} from "discord.js";
 
-declare module 'discord.js' {
+declare module "discord.js" {
   export interface Client {
     commands: Collection<string, Command>;
     cooldowns: Collection<string, Collection<string, number>>;
@@ -16,6 +21,10 @@ declare module 'discord.js' {
     guildOnly?: boolean;
     cooldown?: number;
     permissions?: PermissionResolvable;
-    execute: (message: Message, args: string[]) => void;
+    options?: ApplicationCommandOption[];
+    execute: (
+      message: CommandInteraction,
+      options?: Collection<string, CommandInteractionOption>
+    ) => void;
   }
 }

@@ -1,58 +1,57 @@
-import { Command } from 'discord.js';
+import { Command, ApplicationCommandOptionChoice } from "discord.js";
+import commands from "./index";
+
+const choices: ApplicationCommandOptionChoice[] = [
+  {
+    name: "beep",
+    value: "1",
+  },
+  {
+    name: "server",
+    value: "2",
+  },
+  {
+    name: "user-info",
+    value: "3",
+  },
+];
 
 const command: Command = {
-  name: 'help',
-  description: 'List all of my commands or info about a specific command.',
-  aliases: ['commands'],
-  usage: '[command name]',
+  name: "help",
+  description: "List all of my commands or info about a specific command.",
+  aliases: ["commands"],
+  usage: "[command name]",
   cooldown: 5,
-  execute(message, args) {
-    const data = [];
-    const { commands, commandPrefix } = message.client;
-
-    if (!args.length) {
-      data.push("Here's a list of all my commands:");
-      data.push(commands.map((command) => command.name).join(', '));
-      data.push(
-        `\nYou can send \`${commandPrefix}help [command name]\` to get info on a specific command!`,
-      );
-
-      return message.author
-        .send(data, { split: true })
-        .then(() => {
-          if (message.channel.type === 'dm') return;
-          message.reply("I've sent you a DM with all my commands!");
-        })
-        .catch((error) => {
-          console.error(
-            `Could not send help DM to ${message.author.tag}.\n`,
-            error,
-          );
-          message.reply("it seems like I can't DM you!");
-        });
+  options: [
+    {
+      name: "commands",
+      description: "commands list",
+      type: "STRING",
+      required: true,
+      choices,
+    },
+  ],
+  execute(interaction, options) {
+    if (!options) {
+      interaction.reply("Please choose commands.");
     }
 
-    const name = args[0].toLowerCase();
-    const command =
-      commands.get(name) ||
-      commands.find((c) => !!c.aliases && c.aliases.includes(name));
+    if (options) {
+      const data = [];
+      const firstOptions = options.first();
+      const value = firstOptions?.value;
+      const helping = commands[Number(value)];
 
-    if (!command) {
-      return message.reply("that's not a valid command!");
+      data.push(`**Name:** ${helping.name}`);
+      if (helping.aliases)
+        data.push(`**Aliases:** ${helping.aliases.join(", ")}`);
+      if (helping.description)
+        data.push(`**Description:** ${helping.description}`);
+      if (helping.usage) data.push(`**Usage:** ${helping.usage}`);
+      data.push(`**Cooldown:** ${helping.cooldown || 3} second(s)`);
+
+      interaction.reply({ content: data.join("\n") });
     }
-
-    data.push(`**Name:** ${command.name}`);
-
-    if (command.aliases)
-      data.push(`**Aliases:** ${command.aliases.join(', ')}`);
-    if (command.description)
-      data.push(`**Description:** ${command.description}`);
-    if (command.usage)
-      data.push(`**Usage:** ${commandPrefix}${command.name} ${command.usage}`);
-
-    data.push(`**Cooldown:** ${command.cooldown || 3} second(s)`);
-
-    message.channel.send(data, { split: true });
   },
 };
 
